@@ -1,0 +1,1580 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ScreenTime Guardian — Parent Dashboard</title>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --primary-dark: #4f46e5;
+      --secondary: #8b5cf6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --dark: #0f172a;
+      --darker: #0b1220;
+      --card-bg: #1e293b;
+      --card-hover: #243245;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --border: #334155;
+      --glass: rgba(30, 41, 59, 0.6);
+      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -6px rgba(0, 0, 0, 0.3);
+      --transition: all 0.3s ease;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0c111d 0%, #0a0f1a 100%);
+      color: var(--text-primary);
+      padding: 20px;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 24px;
+    }
+
+    header {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--gradient);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .logo-text h1 {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(to right, #e2e8f0, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 16px;
+      margin-top: 4px;
+    }
+
+    .topbar {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .child-badge {
+      background: var(--card-bg);
+      padding: 8px 16px;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .card-subtitle {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .total-limit-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .limit-controls {
+      flex: 1;
+    }
+
+    .progress-container {
+      margin-top: 16px;
+    }
+
+    .progress-bar {
+      height: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--gradient);
+      border-radius: 6px;
+      transition: width 0.5s ease;
+      position: relative;
+    }
+
+    .progress-fill.warning {
+      background: linear-gradient(135deg, var(--warning), #f97316);
+    }
+
+    .progress-fill.danger {
+      background: linear-gradient(135deg, var(--danger), #dc2626);
+    }
+
+    .progress-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .app-card {
+      background: var(--glass);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: var(--transition);
+      border: 1px solid transparent;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-card:hover {
+      border-color: rgba(255, 255, 255, 0.1);
+      transform: translateY(-3px);
+    }
+
+    .app-card.locked {
+      border-color: rgba(239, 68, 68, 0.4);
+      background: rgba(30, 41, 59, 0.8);
+    }
+
+    .app-card.running {
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+    }
+
+    .app-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-right: 12px;
+    }
+
+    .app-info {
+      flex: 1;
+    }
+
+    .app-name {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .app-limit {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .app-time {
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    .app-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .status-running {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .status-locked {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+    }
+
+    .status-stopped {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    .app-controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .control-label {
+      color: var(--text-secondary);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .control-input {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      color: var(--text-primary);
+      width: 100px;
+      font-size: 15px;
+      transition: var(--transition);
+    }
+
+    .control-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+
+    .chart-container {
+      display: flex;
+      gap: 24px;
+      margin-top: 20px;
+    }
+
+    .chart-wrapper {
+      flex: 1;
+      height: 300px;
+      background: var(--darker);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+    }
+
+    .selected-app-info {
+      width: 240px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .info-label {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .info-value {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .ai-chat {
+      display: flex;
+      flex-direction: column;
+      height: 560px;
+      position: relative;
+    }
+
+    .chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .avatar-section {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-top: 24px;
+    }
+
+    .avatar-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .avatar-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .avatar-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .avatar-subtitle {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--darker);
+      border-radius: var(--radius-lg);
+      margin-bottom: 20px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) var(--darker);
+    }
+
+    .messages::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .messages::-webkit-scrollbar-track {
+      background: var(--darker);
+      border-radius: 3px;
+    }
+
+    .messages::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 3px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 16px;
+      border-radius: 18px;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .message.ai {
+      align-self: flex-start;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .message-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .chat-input-container {
+      display: flex;
+      gap: 12px;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: var(--darker);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      color: var(--text-primary);
+      resize: none;
+      min-height: 60px;
+      font-size: 15px;
+      transition: var(--transition);
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+
+    .chat-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .quick-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .action-btn {
+      width: 100%;
+      padding: 14px;
+      text-align: center;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+      border: none;
+      cursor: pointer;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .lock-btn {
+      background: linear-gradient(135deg, var(--danger), #dc2626);
+      color: white;
+    }
+
+    .unlock-btn {
+      background: linear-gradient(135deg, var(--success), #059669);
+      color: white;
+    }
+
+    footer {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Toast notifications */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 16px 24px;
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 1000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      border-left: 4px solid var(--success);
+    }
+
+    .toast.warning {
+      border-left: 4px solid var(--warning);
+    }
+
+    .toast.error {
+      border-left: 4px solid var(--danger);
+    }
+
+    .toast-icon {
+      font-size: 20px;
+    }
+
+    .toast.success .toast-icon {
+      color: var(--success);
+    }
+
+    .toast.warning .toast-icon {
+      color: var(--warning);
+    }
+
+    .toast.error .toast-icon {
+      color: var(--danger);
+    }
+
+    /* Loading states */
+    .loading {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loading::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      animation: loading 1.5s infinite;
+    }
+
+    @keyframes loading {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    /* Focus states for accessibility */
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    /* Improved app card selection */
+    .app-card.selected {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Responsive improvements */
+    @media (max-width: 1200px) {
+      .container {
+        grid-template-columns: 1fr;
+        padding-bottom: 40px;
+      }
+      
+      .ai-chat {
+        height: 480px;
+      }
+      
+      .chart-container {
+        flex-direction: column;
+      }
+      
+      .selected-app-info {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .apps-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .total-limit-container {
+        flex-direction: column;
+        gap: 24px;
+      }
+      
+      .chat-actions {
+        flex-direction: column;
+      }
+      
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      
+      .topbar {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .child-badge {
+        order: -1;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 12px;
+      }
+      
+      .card {
+        padding: 16px;
+      }
+      
+      .app-controls {
+        flex-direction: column;
+      }
+      
+      .control-group {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <div class="logo-text">
+          <h1>ScreenTime Guardian</h1>
+          <div class="subtitle">Advanced parental controls with AI-powered guidance</div>
+        </div>
+      </div>
+      <div class="topbar">
+        <div class="child-badge">
+          <i class="fas fa-user"></i>
+          <span>Child: <strong id="childName">Alex</strong></span>
+        </div>
+        <button id="exportBtn" class="btn btn-outline">
+          <i class="fas fa-file-export"></i> Export Report
+        </button>
+        <button id="resetAll" class="btn btn-outline">
+          <i class="fas fa-redo"></i> Reset All
+        </button>
+      </div>
+    </header>
+
+    <!-- Left column: Apps and Controls -->
+    <section>
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Daily Screen Time Limit</h2>
+            <div class="card-subtitle">Set and monitor your child's total screen time allowance</div>
+          </div>
+        </div>
+        
+        <div class="total-limit-container">
+          <div class="limit-controls">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+              <input id="totalLimit" type="number" min="0" step="5" value="240" class="control-input">
+              <span class="control-label">minutes</span>
+              <button id="applyTotal" class="btn btn-primary">Apply</button>
+            </div>
+            
+            <div class="progress-container">
+              <div class="progress-bar">
+                <div class="progress-fill" id="totalProgress" style="width: 0%"></div>
+              </div>
+              <div class="progress-stats">
+                <span id="totalUsed">00:00:00</span>
+                <span id="totalLimitDisplay">240 minutes</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="chart-wrapper">
+            <canvas id="totalChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:24px">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Managed Applications</h2>
+            <div class="card-subtitle">Control usage for each application individually</div>
+          </div>
+          <div>
+            <button id="resetUsage" class="btn btn-outline">Reset Usage</button>
+          </div>
+        </div>
+
+        <div class="apps-grid" id="appsContainer">
+          <!-- apps inserted by JS -->
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:24px">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Usage Analytics</h2>
+            <div class="card-subtitle">Detailed breakdown of screen time by application</div>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-wrapper">
+            <canvas id="appChart"></canvas>
+          </div>
+          
+          <div class="selected-app-info">
+            <div class="info-item">
+              <div class="info-label">Selected App</div>
+              <div id="selectedAppTitle" class="info-value">—</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Time Limit</div>
+              <div id="selectedAppLimit" class="info-value">—</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Current Status</div>
+              <div id="selectedAppStatus" class="info-value">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right column: AI avatar & chat -->
+    <aside>
+      <div class="card ai-chat">
+        <div class="chat-header">
+          <div>
+            <h2 class="card-title">AI Parenting Advisor</h2>
+            <div class="card-subtitle">Get personalized advice on screen time management</div>
+          </div>
+          <button id="clearChat" class="btn btn-outline">
+            <i class="fas fa-trash"></i> Clear
+          </button>
+        </div>
+
+        <div class="messages" id="messages">
+          <div class="message ai">
+            <div class="message-header">
+              <i class="fas fa-robot"></i> AI Advisor
+            </div>
+            <p>Hello! I'm your ScreenTime Guardian advisor. I can help you set healthy screen time limits, create balanced schedules, and provide guidance on digital wellbeing for your child.</p>
+          </div>
+        </div>
+
+        <div class="chat-input-container">
+          <textarea id="chatInput" placeholder="Ask for advice on screen time management, healthy limits, or digital wellbeing..."></textarea>
+          <button id="sendBtn" class="btn btn-primary">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+        
+        <div class="chat-actions">
+          <button id="sampleTips" class="btn btn-outline">
+            <i class="fas fa-lightbulb"></i> Get Sample Tips
+          </button>
+          <button id="askAI" class="btn btn-primary" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);">
+            <i class="fas fa-external-link-alt"></i> Access Full AI Advisor Platform
+          </button>
+        </div>
+      </div>
+
+      <div class="avatar-section">
+        <div class="avatar-header">
+          <div class="avatar-icon">
+            <i class="fas fa-comments"></i>
+          </div>
+          <div>
+            <h3 class="avatar-title">Advanced Parenting Guidance</h3>
+            <div class="avatar-subtitle">Comprehensive advice platform with personalized recommendations</div>
+          </div>
+        </div>
+        
+        <p style="margin-bottom: 20px; color: var(--text-secondary);">
+          Our full AI advisor platform provides in-depth guidance on digital parenting, including:
+        </p>
+        
+        <ul style="padding-left: 20px; margin-bottom: 20px; color: var(--text-secondary);">
+          <li style="margin-bottom: 8px;">Personalized screen time schedules</li>
+          <li style="margin-bottom: 8px;">Age-appropriate content recommendations</li>
+          <li style="margin-bottom: 8px;">Strategies for managing screen addiction</li>
+          <li>Digital wellbeing best practices</li>
+        </ul>
+        
+        <a href="#" target="_blank" class="btn btn-primary" style="width: 100%; display: block; text-align: center;">
+          <i class="fas fa-arrow-right"></i> Access Full Advisor Platform
+        </a>
+      </div>
+
+      <div class="quick-actions" style="margin-top: 24px;">
+        <button id="lockAll" class="action-btn lock-btn">
+          <i class="fas fa-lock"></i> Lock All Applications
+        </button>
+        <button id="unlockAll" class="action-btn unlock-btn">
+          <i class="fas fa-lock-open"></i> Unlock All Applications
+        </button>
+      </div>
+    </aside>
+
+    <footer>
+      ScreenTime Guardian MVP — Advanced Parental Controls & AI Guidance © 2025
+    </footer>
+  </div>
+
+  <!-- Toast notification container -->
+  <div id="toastContainer"></div>
+
+<script>
+/*
+  ScreenTime MVP - Enhanced Version
+  - Simulated per-app usage tracking with start/stop
+  - Per-app limits (minutes), total limit
+  - Persisted in localStorage
+  - Charts: total and per-app
+  - AI avatar: mocked responses; placeholder to plug real API
+  - Improved UI/UX with toast notifications, better visual feedback
+*/
+
+const DEFAULT_APPS = [
+  { id: 'youtube', label:'YouTube', color:'#FF0000', iconClass:'fab fa-youtube' },
+  { id: 'whatsapp', label:'WhatsApp', color:'#25D366', iconClass:'fab fa-whatsapp' },
+  { id: 'tiktok', label:'TikTok', color:'#010101', iconClass:'fab fa-tiktok' },
+  { id: 'instagram', label:'Instagram', color:'#C13584', iconClass:'fab fa-instagram' },
+  { id: 'games', label:'Games', color:'#8B5CF6', iconClass:'fas fa-gamepad' },
+];
+
+const KEY = 'st_mvp_v2';
+let state = loadState();
+let selectedAppId = null;
+let timers = {}; // intervals
+
+// --- helpers
+function fmtHMS(seconds){
+  seconds = Math.max(0, Math.floor(seconds));
+  const h = Math.floor(seconds/3600);
+  const m = Math.floor((seconds%3600)/60);
+  const s = seconds%60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function minutesToSeconds(min){ return Math.round(Number(min||0)*60); }
+function saveState(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+function loadState(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  // default structure
+  const apps = {};
+  DEFAULT_APPS.forEach(a=>{
+    apps[a.id] = {
+      id: a.id,
+      label: a.label,
+      color: a.color,
+      iconClass: a.iconClass,
+      usedSeconds: 0,
+      limitSeconds: minutesToSeconds(60), // default 60 mins per app
+      running: false,
+      lastStart: null
+    };
+  });
+  return {
+    childName: 'Alex',
+    totalLimitSeconds: minutesToSeconds(240),
+    apps,
+    logs: [] // record session events for export
+  };
+}
+
+// --- Toast notifications
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  
+  const icon = type === 'success' ? 'check-circle' : 
+               type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle';
+  
+  toast.innerHTML = `
+    <i class="fas fa-${icon} toast-icon"></i>
+    <span>${message}</span>
+  `;
+  
+  container.appendChild(toast);
+  
+  // Show toast
+  setTimeout(() => toast.classList.add('show'), 10);
+  
+  // Auto remove after 4 seconds
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 300);
+  }, 4000);
+}
+
+// --- UI build
+const appsContainer = document.getElementById('appsContainer');
+const totalUsedEl = document.getElementById('totalUsed');
+const totalLimitInput = document.getElementById('totalLimit');
+const applyTotalBtn = document.getElementById('applyTotal');
+const selectedChild = document.getElementById('childName');
+const exportBtn = document.getElementById('exportBtn');
+const resetAllBtn = document.getElementById('resetAll');
+const messagesEl = document.getElementById('messages');
+const chatInput = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+const sampleTipsBtn = document.getElementById('sampleTips');
+const clearChatBtn = document.getElementById('clearChat');
+const lockAllBtn = document.getElementById('lockAll');
+const unlockAllBtn = document.getElementById('unlockAll');
+const resetUsageBtn = document.getElementById('resetUsage');
+const totalProgress = document.getElementById('totalProgress');
+const totalLimitDisplay = document.getElementById('totalLimitDisplay');
+
+function renderApps(){
+  appsContainer.innerHTML = '';
+  const apps = Object.values(state.apps);
+  apps.forEach(a=>{
+    const el = document.createElement('div');
+    
+    // Determine status class
+    let statusClass = 'status-stopped';
+    let statusText = 'Stopped';
+    let cardClass = 'app-card';
+    
+    if(a.running) {
+      statusClass = 'status-running';
+      statusText = 'Running';
+      cardClass += ' running';
+    } else if(a.usedSeconds >= a.limitSeconds && a.limitSeconds > 0) {
+      statusClass = 'status-locked';
+      statusText = 'Locked';
+      cardClass += ' locked';
+    }
+    
+    // Add selected class if this is the selected app
+    if(selectedAppId === a.id) {
+      cardClass += ' selected';
+    }
+    
+    el.className = cardClass;
+    el.dataset.appid = a.id;
+    
+    el.innerHTML = `
+      <div class="app-header">
+        <div style="display:flex;align-items:start;gap:12px">
+          <div class="app-icon" style="background-color: ${a.color}30; color: ${a.color}">
+            <i class="${a.iconClass}"></i>
+          </div>
+          <div class="app-info">
+            <div class="app-name">${a.label}</div>
+            <div class="app-limit">Limit: <strong>${a.limitSeconds>0? Math.round(a.limitSeconds/60) + ' min':'Unlimited'}</strong></div>
+          </div>
+        </div>
+        <div class="app-time">${fmtHMS(a.usedSeconds)}</div>
+      </div>
+      
+      <div class="app-status ${statusClass}">
+        <i class="fas fa-circle" style="font-size: 8px;"></i>
+        ${statusText}
+      </div>
+      
+      <div class="app-controls">
+        <button class="btn btn-outline startBtn" data-app="${a.id}">
+          ${a.running ? '<i class="fas fa-stop"></i> Stop' : '<i class="fas fa-play"></i> Start'}
+        </button>
+        <button class="btn btn-outline resetBtn" data-app="${a.id}">
+          <i class="fas fa-redo"></i> Reset
+        </button>
+        <div class="control-group">
+          <span class="control-label">Limit (min)</span>
+          <input type="number" class="control-input limitInput" data-app="${a.id}" min="0" value="${a.limitSeconds? Math.round(a.limitSeconds/60):0}">
+        </div>
+      </div>
+    `;
+
+    // click to select
+    el.addEventListener('click', (ev)=>{
+      if(ev.target.closest('.startBtn') || ev.target.closest('.resetBtn') || ev.target.closest('.limitInput')) return;
+      selectedAppId = a.id;
+      updateSelectedAppPanel();
+      renderApps(); // Re-render to update selection
+    });
+
+    appsContainer.appendChild(el);
+  });
+
+  // attach events
+  document.querySelectorAll('.startBtn').forEach(b=>{
+    b.onclick = (e)=> {
+      e.stopPropagation();
+      const id = b.dataset.app;
+      toggleApp(id);
+    };
+  });
+  document.querySelectorAll('.resetBtn').forEach(b=>{
+    b.onclick = (e)=>{
+      e.stopPropagation();
+      const id = b.dataset.app;
+      resetAppUsage(id);
+    };
+  });
+  document.querySelectorAll('.limitInput').forEach(inp=>{
+    inp.onchange = (e)=>{
+      const id = inp.dataset.app;
+      const v = Number(inp.value) || 0;
+      state.apps[id].limitSeconds = minutesToSeconds(v);
+      saveState();
+      renderApps();
+      updateCharts();
+      showToast(`${state.apps[id].label} limit updated to ${v} minutes`, 'success');
+    };
+  });
+}
+
+// --- timers & control
+function toggleApp(id){
+  const app = state.apps[id];
+  if(!app) return;
+  if(app.running){
+    // stop
+    stopApp(id);
+  } else {
+    // start — check limit first
+    if(app.limitSeconds>0 && app.usedSeconds >= app.limitSeconds){
+      showToast(`${app.label} is locked because the limit is reached.`, 'warning');
+      return;
+    }
+    startApp(id);
+  }
+}
+
+function startApp(id){
+  const app = state.apps[id];
+  if(!app) return;
+  app.running = true;
+  app.lastStart = Date.now();
+  state.logs.push({type:'start', app:id, t:Date.now()});
+  saveState();
+  // set interval tick
+  if(timers[id]) clearInterval(timers[id]);
+  timers[id] = setInterval(()=>{
+    // increment usedSeconds
+    const now = Date.now();
+    const elapsed = Math.floor((now - app.lastStart)/1000);
+    // we track by calculating since lastStart to be robust
+    app.usedSeconds = (app._baseUsed||0) + elapsed;
+    // if surpass limit, stop and lock
+    if(app.limitSeconds>0 && app.usedSeconds >= app.limitSeconds){
+      // clamp
+      app.usedSeconds = app.limitSeconds;
+      stopApp(id, true);
+      showToast(`${app.label} limit reached and locked.`, 'warning');
+    }
+    saveState();
+    updateAppUI(id);
+    updateCharts();
+  }, 1000);
+  // set base marker for robust accumulation
+  app._baseUsed = app.usedSeconds;
+  updateAppUI(id);
+  updateSelectedAppPanel();
+  showToast(`${app.label} timer started`, 'success');
+}
+
+function stopApp(id, reached=false){
+  const app = state.apps[id];
+  if(!app) return;
+  if(!app.running) return;
+  // compute final elapsed
+  const now = Date.now();
+  const elapsedSec = Math.floor((now - app.lastStart)/1000);
+  app.usedSeconds = (app._baseUsed || 0) + elapsedSec;
+  app.running = false;
+  app.lastStart = null;
+  app._baseUsed = app.usedSeconds;
+  state.logs.push({type: 'stop', app:id, t:Date.now(), reached});
+  saveState();
+  if(timers[id]){ clearInterval(timers[id]); delete timers[id]; }
+  updateAppUI(id);
+  updateSelectedAppPanel();
+  updateCharts();
+  showToast(`${app.label} timer stopped`, 'success');
+}
+
+function updateAppUI(id){
+  const app = state.apps[id];
+  if(!app) return;
+  const node = document.querySelector(`[data-appid="${id}"]`);
+  if(!node) return;
+  
+  // Update time
+  const timeEl = node.querySelector('.app-time');
+  if(timeEl) timeEl.textContent = fmtHMS(app.usedSeconds);
+  
+  // Update status
+  const statusEl = node.querySelector('.app-status');
+  if(statusEl) {
+    let statusClass = 'status-stopped';
+    let statusText = 'Stopped';
+    if(app.running) {
+      statusClass = 'status-running';
+      statusText = 'Running';
+    } else if(app.usedSeconds >= app.limitSeconds && app.limitSeconds > 0) {
+      statusClass = 'status-locked';
+      statusText = 'Locked';
+    }
+    
+    statusEl.className = `app-status ${statusClass}`;
+    statusEl.innerHTML = `<i class="fas fa-circle" style="font-size: 8px;"></i> ${statusText}`;
+  }
+  
+  // Update card classes
+  node.classList.remove('running', 'locked');
+  if(app.running) {
+    node.classList.add('running');
+  } else if(app.usedSeconds >= app.limitSeconds && app.limitSeconds>0) {
+    node.classList.add('locked');
+  }
+  
+  // Update selection
+  if(selectedAppId === id) {
+    node.classList.add('selected');
+  } else {
+    node.classList.remove('selected');
+  }
+}
+
+function resetAppUsage(id){
+  const app = state.apps[id];
+  if(!app) return;
+  if(confirm(`Reset usage for ${app.label}?`)){
+    // stop if running
+    if(app.running) stopApp(id);
+    app.usedSeconds = 0;
+    app._baseUsed = 0;
+    app.lastStart = null;
+    saveState();
+    renderApps();
+    updateCharts();
+    showToast(`${app.label} usage reset`, 'success');
+  }
+}
+
+function resetAll(){
+  if(!confirm('Clear all usage data and settings?')) return;
+  localStorage.removeItem(KEY);
+  state = loadState();
+  selectedAppId = null;
+  clearAllTimers();
+  renderAll();
+  showToast('All data reset to defaults', 'success');
+}
+
+function clearAllTimers(){
+  Object.keys(timers).forEach(k=>{
+    clearInterval(timers[k]);
+    delete timers[k];
+  });
+}
+
+// --- Selected app panel & charts
+const totalCtx = document.getElementById('totalChart').getContext('2d');
+const appCtx = document.getElementById('appChart').getContext('2d');
+let totalChart, appChart;
+
+function createCharts(){
+  if(totalChart) totalChart.destroy();
+  totalChart = new Chart(totalCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Used','Remaining'],
+      datasets: [{
+        data: [0,100],
+        backgroundColor: ['var(--primary)', 'rgba(255,255,255,0.06)'],
+        borderWidth:0
+      }]
+      
+    },
+    options:{
+      plugins:{legend:{display:false}},
+      maintainAspectRatio:false,
+      cutout: '70%'
+    }
+  });
+
+  if(appChart) appChart.destroy();
+  appChart = new Chart(appCtx, {
+    type: 'bar',
+    data: {labels:[],datasets:[{label:'Minutes used',data:[],backgroundColor:[]}]},
+    options:{
+      indexAxis:'y',
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{beginAtZero:true, grid:{color: 'rgba(255,255,255,0.1)'}},
+        y:{grid:{display:false}}
+      },
+      maintainAspectRatio:false
+    }
+  });
+}
+
+function updateCharts(){
+  // total
+  const totalUsed = Object.values(state.apps).reduce((s,a)=>s + a.usedSeconds,0);
+  const totalLimit = state.totalLimitSeconds || 1;
+  const usedPct = totalLimit>0? Math.min(100, Math.round((totalUsed/totalLimit)*100)):0;
+  
+  totalChart.data.datasets[0].data = [totalUsed, Math.max(0, totalLimit - totalUsed)];
+  totalChart.update();
+  
+  // Update progress bar
+  totalProgress.style.width = `${usedPct}%`;
+  
+  // Update progress bar color based on usage
+  totalProgress.classList.remove('warning', 'danger');
+  if (usedPct >= 80) {
+    totalProgress.classList.add('danger');
+  } else if (usedPct >= 60) {
+    totalProgress.classList.add('warning');
+  }
+  
+  totalUsedEl.textContent = fmtHMS(totalUsed);
+  totalLimitDisplay.textContent = `${Math.round(state.totalLimitSeconds/60)} minutes`;
+
+  // per-app bars
+  const labels = [];
+  const data = [];
+  const colors = [];
+  Object.values(state.apps).forEach(a=>{
+    labels.push(a.label);
+    data.push(Math.round(a.usedSeconds/60));
+    colors.push(a.color||'#64748b');
+  });
+  appChart.data.labels = labels;
+  appChart.data.datasets[0].data = data;
+  appChart.data.datasets[0].backgroundColor = colors;
+  appChart.update();
+}
+
+function updateSelectedAppPanel(){
+  const title = document.getElementById('selectedAppTitle');
+  const lim = document.getElementById('selectedAppLimit');
+  const status = document.getElementById('selectedAppStatus');
+  if(!selectedAppId){
+    title.textContent = '—';
+    lim.textContent = '—';
+    status.textContent = '—';
+    return;
+  }
+  const a = state.apps[selectedAppId];
+  title.textContent = a.label;
+  lim.textContent = a.limitSeconds? `${Math.round(a.limitSeconds/60)} min` : 'Unlimited';
+  
+  let statusText = 'Stopped';
+  if(a.running) statusText = 'Running';
+  else if(a.usedSeconds >= a.limitSeconds && a.limitSeconds>0) statusText = 'Locked';
+  
+  status.textContent = statusText;
+}
+
+// --- Export CSV
+function exportCSV(){
+  const rows = [['app','label','used_seconds','limit_seconds','date_exported']];
+  const t = new Date().toISOString();
+  Object.values(state.apps).forEach(a=>{
+    rows.push([a.id,a.label,a.usedSeconds,a.limitSeconds,t]);
+  });
+  let csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `screentime_report_${state.childName}_${(new Date()).toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Report exported successfully', 'success');
+}
+
+// --- AI Avatar (mock)
+function sendMockChat(){
+  const text = chatInput.value.trim();
+  if(!text) return;
+  appendMsg('user', text);
+  chatInput.value = '';
+  // very simple rule-based mock responses
+  appendMsg('ai','Thinking...');
+  setTimeout(()=>{
+    const resp = mockAdvice(text);
+    // replace last 'Thinking...' with real
+    const last = messagesEl.querySelectorAll('.message.ai');
+    if(last.length) last[last.length-1].querySelector('p').textContent = resp;
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }, 600 + Math.random()*1000);
+}
+
+function appendMsg(who, text){
+  const el = document.createElement('div');
+  el.className = `message ${who}`;
+  
+  const header = document.createElement('div');
+  header.className = 'message-header';
+  header.innerHTML = who === 'user' 
+    ? '<i class="fas fa-user"></i> You' 
+    : '<i class="fas fa-robot"></i> AI Advisor';
+  
+  const content = document.createElement('p');
+  content.textContent = text;
+  
+  el.appendChild(header);
+  el.appendChild(content);
+  messagesEl.appendChild(el);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function mockAdvice(text){
+  const t = text.toLowerCase();
+  if(t.includes('schedule') || t.includes('routine')){
+    return "For ages 6–12, aim for 1–2 hours of recreational screen time on school days. Use consistent 'no-screen' windows before bed and during family mealtimes. Consider using our full advisor platform for personalized schedules!";
+  } else if(t.includes('limit') || t.includes('lock')){
+    return "Set clear app-specific limits, and combine them with device-wide rules. Encourage replacement activities (books, play) when limits are reached. Our platform can help you create balanced limits based on your child's age and needs.";
+  } else if(t.includes('sleep') || t.includes('bed')){
+    return "Avoid screens 1 hour before bed. Night-time blue light and stimulating content both harm sleep onset. Consider a 'no-screen' 9pm rule for younger kids. The full advisor platform offers sleep hygiene recommendations.";
+  } else if(t.includes('frustrat') || t.includes('angry')){
+    return "Stay calm. Use time limits as a predictable rule, not a surprise punishment. Offer positive reinforcement for following limits. Our platform provides strategies for handling resistance to screen time limits.";
+  } else {
+    const generic = [
+      "Keep rules simple and consistent. Explain why limits exist, and involve your child in creating them.",
+      "Gradually adjust limits — start strict, then adapt as you see responsible behaviour.",
+      "Use incentives: e.g. extra outdoor time for meeting weekly targets.",
+      "For more comprehensive guidance, access our full AI advisor platform with personalized recommendations."
+    ];
+    return generic[Math.floor(Math.random()*generic.length)];
+  }
+}
+
+// sample tips
+function sampleTips(){
+  const texts = [
+    "Create a family charging station outside bedrooms to discourage nighttime use.",
+    "Designate device-free meals to encourage family conversation.",
+    "Replace some screen time with shared activities like board games or outdoor play.",
+    "Model healthy device use yourself - children learn by example.",
+    "Access our full advisor platform for personalized digital wellbeing strategies."
+  ];
+  appendMsg('ai', texts[Math.floor(Math.random()*texts.length)]);
+}
+
+// Quick actions
+function lockAllApps(){
+  Object.values(state.apps).forEach(a=>{
+    // set used to limit to lock
+    if(a.limitSeconds>0) a.usedSeconds = a.limitSeconds;
+    if(a.running) stopApp(a.id);
+  });
+  saveState(); renderApps(); updateCharts();
+  showToast('All applications locked', 'success');
+}
+function unlockAllApps(){
+  Object.values(state.apps).forEach(a=>{
+    if(a.running) stopApp(a.id);
+    a.usedSeconds = Math.min(a.usedSeconds, a.limitSeconds || a.usedSeconds);
+  });
+  saveState(); renderApps(); updateCharts();
+  showToast('All applications unlocked', 'success');
+}
+
+// --- Event wiring
+applyTotalBtn.onclick = ()=>{
+  const mins = Number(totalLimitInput.value) || 0;
+  state.totalLimitSeconds = minutesToSeconds(mins);
+  saveState(); updateCharts();
+  showToast(`Total daily limit set to ${mins} minutes`, 'success');
+};
+exportBtn.onclick = exportCSV;
+resetAllBtn.onclick = resetAll;
+sendBtn.onclick = sendMockChat;
+sampleTipsBtn.onclick = sampleTips;
+clearChatBtn.onclick = ()=>{
+  messagesEl.innerHTML = '';
+  appendMsg('ai','Hello! I\'m your ScreenTime Guardian advisor. I can help you set healthy screen time limits, create balanced schedules, and provide guidance on digital wellbeing for your child.');
+  showToast('Chat cleared', 'success');
+};
+lockAllBtn.onclick = lockAllApps;
+unlockAllBtn.onclick = unlockAllApps;
+resetUsageBtn.onclick = ()=>{
+  if(!confirm('Reset usage for ALL apps?')) return;
+  Object.values(state.apps).forEach(a=>{
+    if(a.running) stopApp(a.id);
+    a.usedSeconds = 0; a._baseUsed = 0; a.lastStart = null;
+  });
+  saveState(); renderApps(); updateCharts();
+  showToast('All app usage reset', 'success');
+};
+
+// Chat input enter key support
+chatInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMockChat();
+  }
+});
+
+// --- Initial render and hydration for running timers (if any)
+function renderAll(){
+  selectedChild.textContent = state.childName || 'Child';
+  totalLimitInput.value = Math.round((state.totalLimitSeconds||0)/60);
+  renderApps();
+  createCharts();
+  updateCharts();
+  updateSelectedAppPanel();
+  // restart any that were marked running (simulate continuity)
+  Object.values(state.apps).forEach(a=>{
+    if(a.running && a.lastStart){
+      // if lastStart is older than now, compute baseUsed
+      a._baseUsed = a.usedSeconds || 0;
+      startApp(a.id);
+    }
+  });
+}
+
+// run
+renderAll();
+
+// On unload: stop all timers cleanly and persist
+window.addEventListener('beforeunload', ()=>{
+  Object.keys(timers).forEach(id=>{
+    if(state.apps[id] && state.apps[id].running) {
+      stopApp(id);
+    }
+  });
+  saveState();
+});
+
+/* Button to access the full AI advisor platform */
+document.getElementById('askAI').onclick = ()=>{
+  // In a real implementation, this would redirect to your AI advisor platform
+  window.open('#', '_blank');
+};
+</script>
+</body>
+</html>
